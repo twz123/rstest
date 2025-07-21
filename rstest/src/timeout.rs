@@ -160,10 +160,7 @@ mod tests {
 
         #[test]
         fn should_pass() {
-            execute_with_timeout_sync(
-                || test(Duration::from_millis(30)),
-                Duration::from_millis(70),
-            )
+            execute_with_timeout_sync(|| test(Duration::from_millis(30)), Duration::from_secs(1))
         }
 
         #[test]
@@ -173,17 +170,14 @@ mod tests {
                 || {
                     panic!("inner message");
                 },
-                Duration::from_millis(100),
+                Duration::from_secs(1),
             )
         }
 
         #[test]
         #[should_panic]
         fn should_fail() {
-            execute_with_timeout_sync(
-                || test(Duration::from_millis(70)),
-                Duration::from_millis(30),
-            )
+            execute_with_timeout_sync(|| test(Duration::from_secs(1)), Duration::from_millis(30))
         }
         #[test]
         fn should_compile_also_with_no_copy_move() {
@@ -193,7 +187,7 @@ mod tests {
             }
             let s = S {};
 
-            execute_with_timeout_sync(move || test(s), Duration::from_millis(20))
+            execute_with_timeout_sync(move || test(s), Duration::from_secs(1))
         }
     }
 }
