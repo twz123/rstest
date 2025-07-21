@@ -17,38 +17,32 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         runs-on:
         - ubuntu-latest
         - windows-latest
+        channel:
+        - stable
+        - beta
+        - nightly
 
     runs-on: ${{ matrix.runs-on }}
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install latest nightly
+    - name: Install latest ${{ matrix.channel }}
       uses: actions-rs/toolchain@v1
       with:
-          toolchain: nightly
-          override: true
-    - name: Install latest beta
-      uses: actions-rs/toolchain@v1
-      with:
-          toolchain: beta
+          toolchain: ${{ matrix.channel }}
+          default: true
     - name: Build
       run: cargo build --all --verbose
-    - name: Run tests stable
+    - name: Run tests
       env:
-        RSTEST_TEST_CHANNEL: stable
+        RSTEST_TEST_CHANNEL: ${{ matrix.channel }}
       run: cargo test --all --verbose
-    - name: Run tests beta
-      env:
-        RSTEST_TEST_CHANNEL: beta
-      run: cargo test --all --verbose
-    - name: Run tests nightly
-      env:
-        RSTEST_TEST_CHANNEL: nightly
-      run: cargo test --all --verbose
+
   msrv:
     runs-on: ubuntu-latest
     steps:
